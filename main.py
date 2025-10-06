@@ -41,6 +41,12 @@ class MainLayout(BoxLayout):
         resultado = [mapa.get(p, p) for p in palavras]
         self.ids.saida.text = " ".join(resultado)
 
+    def copiar_resultado(self, texto):
+        from kivy.core.clipboard import Clipboard
+        if texto.strip():
+            Clipboard.copy(texto)
+            print("Texto copiado para a área de transferência!")
+
 
 class CodificadorApp(App):
     def build(self):
