@@ -27,11 +27,14 @@ jobs:
         run: |
           mkdir -p $HOME/.buildozer/android/platform
           cd $HOME/.buildozer/android/platform
-          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-          unzip commandlinetools-linux-9477386_latest.zip -d cmdline-tools
-          yes | cmdline-tools/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk "platform-tools" "platforms;android-31" "build-tools;31.0.0" "ndk;25.2.9519653" "cmake;3.22.1"
+          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O tools.zip
+          mkdir -p android-sdk/cmdline-tools
+          unzip tools.zip -d android-sdk/cmdline-tools
+          mv android-sdk/cmdline-tools/cmdline-tools android-sdk/cmdline-tools/latest
+          yes | android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk "platform-tools" "platforms;android-31" "build-tools;31.0.0" "ndk;25.2.9519653" "cmake;3.22.1"
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+          PATH: $PATH:$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin
 
       - name: Build APK
         run: |
@@ -41,6 +44,7 @@ jobs:
           buildozer -v android debug
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+          PATH: $PATH:$HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
