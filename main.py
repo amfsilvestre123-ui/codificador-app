@@ -1,82 +1,33 @@
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
-import random, string
+from kivy.properties import StringProperty
+import random
+import string
 
-# dicionário de chaves
-chaves = {}
+class CodificadorLayout(BoxLayout):
+    input_text = StringProperty("")
+    output_text = StringProperty("")
 
-class MainLayout(BoxLayout):
-    def codificar(self):
-        texto_original = self.ids.entrada.text.strip()
-        palavras = texto_original.split()
-        mapa = {}
-        resultado = []
-
-        for palavra in palavras:
-            if len(palavra) > 0:
-                pos = random.randint(0, len(palavra)-1)
-                letra_nova = random.choice(string.ascii_lowercase)
-                while letra_nova == palavra[pos].lower():
-                    letra_nova = random.choice(string.ascii_lowercase)
-
-                palavra_codificada = palavra[:pos] + letra_nova + palavra[pos+1:]
-                mapa[palavra_codificada] = palavra
-                resultado.append(palavra_codificada)
+    def code_text(self):
+        words = self.input_text.split()
+        coded_words = []
+        for word in words:
+            if len(word) > 1:
+                idx = random.randint(0, len(word) - 1)
+                new_letter = random.choice(string.ascii_lowercase)
+                coded_words.append(word[:idx] + new_letter + word[idx+1:])
             else:
-                resultado.append(palavra)
+                coded_words.append(word)
+        self.output_text = " ".join(coded_words)
 
-        texto_codificado = " ".join(resultado)
-        chaves[texto_codificado] = mapa
-        self.ids.saida.text = texto_codificado
-
-    def decodificar(self):
-        texto_codificado = self.ids.entrada.text.strip()
-        palavras = texto_codificado.split()
-
-        if texto_codificado not in chaves:
-            self.ids.saida.text = "Erro: não existe chave para este texto!"
-            return
-
-        mapa = chaves[texto_codificado]
-        resultado = [mapa.get(p, p) for p in palavras]
-        self.ids.saida.text = " ".join(resultado)
-
-    def copiar_resultado(self, texto):
-        from kivy.core.clipboard import Clipboard
-        if texto.strip():
-            Clipboard.copy(texto)
-            print("Texto copiado para a área de transferência!")
-
+    def uncode_text(self):
+        # (Simplesmente mostra o texto original)
+        self.output_text = self.input_text
 
 class CodificadorApp(App):
     def build(self):
-        return MainLayout()
-
-
-from kivy.app import App
-from kivy.lang import Builder
-from kivy.core.clipboard import Clipboard
-
-class CodificadorApp(App):
-    def build(self):
-        return Builder.load_file("codificador.kv")
-
-    def codificar_texto(self):
-        texto = self.root.ids.entrada.text
-        if texto:
-            resultado = ''.join(chr(ord(c) + 1) for c in texto)
-            self.root.ids.resultado.text = resultado
-
-    def decodificar_texto(self):
-        texto = self.root.ids.entrada.text
-        if texto:
-            resultado = ''.join(chr(ord(c) - 1) for c in texto)
-            self.root.ids.resultado.text = resultado
-
-    def copiar_resultado(self, texto):
-        if texto.strip():
-            Clipboard.copy(texto)
-            print("✅ Texto copiado para a área de transferência!")
+        self.title = "Codificador de Texto"
+        return CodificadorLayout()
 
 if __name__ == "__main__":
     CodificadorApp().run()
