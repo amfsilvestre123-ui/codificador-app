@@ -1,7 +1,14 @@
 <CodificadorLayout>:
     orientation: "vertical"
-    spacing: 30
-    padding: 40
+    spacing: 20
+    padding: 25
+
+    canvas.before:
+        Color:
+            rgba: 0.94, 0.94, 0.94, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
 
     # Entrada de texto
     TextInput:
@@ -10,24 +17,33 @@
         on_text: root.input_text = self.text
         hint_text: "Escreve o texto aqui..."
         size_hint_y: 0.4
-        font_size: "40sp"
+        font_size: "20sp"
+        background_color: (1, 1, 1, 1)
+        foreground_color: (0, 0, 0, 1)
         multiline: True
+        padding: [15, 15]
 
     # Botões
     BoxLayout:
         size_hint_y: 0.2
-        spacing: 40
+        spacing: 25
 
         Button:
             text: "CODE"
-            font_size: "40sp"
+            font_size: "20sp"
             size_hint: 0.5, 1
+            background_normal: ""
+            background_color: (0.2, 0.6, 1, 1)  # Azul vivo
+            color: (1, 1, 1, 1)
             on_release: root.code_text()
 
         Button:
             text: "UNCODE"
-            font_size: "40sp"
+            font_size: "20sp"
             size_hint: 0.5, 1
+            background_normal: ""
+            background_color: (0.3, 0.8, 0.4, 1)  # Verde suave
+            color: (1, 1, 1, 1)
             on_release: root.uncode_text()
 
     # Saída (somente leitura)
@@ -35,8 +51,9 @@
         id: saida
         text: root.output_text
         readonly: True
-        font_size: "40sp"
+        font_size: "20sp"
         background_color: (0.95, 0.95, 0.95, 1)
         foreground_color: (0, 0, 0, 1)
         size_hint_y: 0.4
         multiline: True
+        padding: [15, 15]
