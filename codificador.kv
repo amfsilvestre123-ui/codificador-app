@@ -1,80 +1,42 @@
-BoxLayout:
+<CodificadorLayout>:
     orientation: "vertical"
-    padding: 20
-    spacing: 25
-    canvas.before:
-        Color:
-            rgba: 0.96, 0.96, 0.96, 1
-        Rectangle:
-            pos: self.pos
-            size: self.size
+    spacing: 30
+    padding: 40
 
-    Label:
-        text: "🔐 Codificador de Texto"
-        font_size: 32
-        bold: True
-        size_hint_y: None
-        height: 70
-        color: 0.1, 0.1, 0.1, 1
-
-    # Caixa de entrada de texto
+    # Entrada de texto
     TextInput:
         id: entrada
-        hint_text: "✏️ Escreve o texto aqui..."
+        text: root.input_text
+        on_text: root.input_text = self.text
+        hint_text: "Escreve o texto aqui..."
         size_hint_y: 0.4
+        font_size: "40sp"
         multiline: True
-        background_color: (1, 1, 1, 1)
-        foreground_color: (0, 0, 0, 1)
-        font_size: 22
-        padding: [20, 20, 20, 20]
-        background_normal: ''
-        background_active: ''
-        cursor_color: (0, 0, 0, 1)
 
+    # Botões
     BoxLayout:
-        size_hint_y: None
-        height: 90  # Botões grandes
-        spacing: 25
-        padding: [0, 0]
+        size_hint_y: 0.2
+        spacing: 40
 
         Button:
-            text: "Codificar"
-            font_size: 24
-            bold: True
-            background_normal: ''
-            background_color: (0.15, 0.5, 1, 1)
-            color: (1, 1, 1, 1)
-            on_press: app.codificar_texto()
+            text: "CODE"
+            font_size: "40sp"
+            size_hint: 0.5, 1
+            on_release: root.code_text()
 
         Button:
-            text: "Decodificar"
-            font_size: 24
-            bold: True
-            background_normal: ''
-            background_color: (0.15, 0.8, 0.4, 1)
-            color: (1, 1, 1, 1)
-            on_press: app.decodificar_texto()
+            text: "UNCODE"
+            font_size: "40sp"
+            size_hint: 0.5, 1
+            on_release: root.uncode_text()
 
-    Label:
-        text: "📜 Resultado:"
-        size_hint_y: None
-        height: 40
-        font_size: 24
-        color: 0.1, 0.1, 0.1, 1
-
-    # Caixa de saída (só leitura)
+    # Saída (somente leitura)
     TextInput:
-        id: resultado
+        id: saida
+        text: root.output_text
         readonly: True
-        multiline: True
-        size_hint_y: 0.4
-        background_color: (1, 1, 1, 1)
+        font_size: "40sp"
+        background_color: (0.95, 0.95, 0.95, 1)
         foreground_color: (0, 0, 0, 1)
-        font_size: 22
-        padding: [20, 20, 20, 20]
-        background_normal: ''
-        background_active: ''
-        cursor_color: (0, 0, 0, 0)
-        hint_text: "O texto codificado/decodificado aparecerá aqui..."
-        on_touch_down:
-            if self.collide_point(*args[1].pos): app.copiar_resultado(self.text)
+        size_hint_y: 0.4
+        multiline: True
