@@ -1,12 +1,12 @@
 [app]
 title = Codificador App
+version = 1.0
 package.name = codificador
 package.domain = org.example
 source.dir = .
 source.include_exts = py,kv,png,jpg,atlas
 requirements = python3,kivy
 orientation = portrait
-osx.python_version = 3
 fullscreen = 0
 
 [buildozer]
