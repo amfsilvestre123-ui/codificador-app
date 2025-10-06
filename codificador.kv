@@ -1,24 +1,51 @@
-<MainLayout>:
+BoxLayout:
     orientation: "vertical"
-    padding: 10
-    spacing: 10
+    padding: 20
+    spacing: 20
 
+    Label:
+        text: "Codificador de Texto"
+        font_size: 28
+        size_hint_y: None
+        height: 50
+
+    # Caixa de texto original
     TextInput:
         id: entrada
-        hint_text: "Texto Original / Codificado"
-        size_hint_y: 0.3
+        hint_text: "Escreve o texto aqui..."
+        size_hint_y: 0.4
+        multiline: True
 
     BoxLayout:
-        size_hint_y: 0.1
-        spacing: 10
+        size_hint_y: None
+        height: 60
+        spacing: 20
+
         Button:
             text: "Code"
-            on_press: root.codificar()
+            font_size: 18
+            on_press: app.codificar_texto()
+
         Button:
             text: "Uncode"
-            on_press: root.decodificar()
+            font_size: 18
+            on_press: app.decodificar_texto()
 
+    Label:
+        text: "Resultado:"
+        size_hint_y: None
+        height: 30
+        font_size: 20
+
+    # Caixa de resultado — só leitura (não abre teclado)
     TextInput:
-        id: saida
-        hint_text: "Resultado"
-        size_hint_y: 0.3
+        id: resultado
+        readonly: True
+        multiline: True
+        size_hint_y: 0.4
+        background_color: (0.95, 0.95, 0.95, 1)
+        foreground_color: (0, 0, 0, 1)
+        cursor_color: (0, 0, 0, 0)  # oculta o cursor
+        hint_text: "O resultado aparecerá aqui..."
+        on_touch_down:
+            if self.collide_point(*args[1].pos): app.copiar_resultado(self.text)
