@@ -53,5 +53,30 @@ class CodificadorApp(App):
         return MainLayout()
 
 
+from kivy.app import App
+from kivy.lang import Builder
+from kivy.core.clipboard import Clipboard
+
+class CodificadorApp(App):
+    def build(self):
+        return Builder.load_file("codificador.kv")
+
+    def codificar_texto(self):
+        texto = self.root.ids.entrada.text
+        if texto:
+            resultado = ''.join(chr(ord(c) + 1) for c in texto)
+            self.root.ids.resultado.text = resultado
+
+    def decodificar_texto(self):
+        texto = self.root.ids.entrada.text
+        if texto:
+            resultado = ''.join(chr(ord(c) - 1) for c in texto)
+            self.root.ids.resultado.text = resultado
+
+    def copiar_resultado(self, texto):
+        if texto.strip():
+            Clipboard.copy(texto)
+            print("✅ Texto copiado para a área de transferência!")
+
 if __name__ == "__main__":
     CodificadorApp().run()
