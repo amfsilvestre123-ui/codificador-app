@@ -28,11 +28,20 @@ jobs:
         run: |
           mkdir -p $HOME/.buildozer/android/platform
           cd $HOME/.buildozer/android/platform
+
+          # Baixa e extrai o Android commandline tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O tools.zip
           mkdir -p android-sdk/cmdline-tools
           unzip -q tools.zip -d android-sdk/cmdline-tools
           mv android-sdk/cmdline-tools/cmdline-tools android-sdk/cmdline-tools/latest
-          echo "y" | android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk "platform-tools" "platforms;android-31" "build-tools;31.0.0" "ndk;25.2.9519653" "cmake;3.22.1"
+
+          # Atualiza PATH e instala componentes necessários
+          export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
+
+          yes | sdkmanager --sdk_root=$ANDROID_HOME --licenses
+          yes | sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-31" "build-tools;31.0.0" "ndk;25.2.9519653" "cmake;3.22.1"
+
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
 
@@ -41,6 +50,7 @@ jobs:
           export ANDROIDSDK=$HOME/.buildozer/android/platform/android-sdk
           export ANDROIDNDK=$ANDROIDSDK/ndk/25.2.9519653
           export PATH=$ANDROIDSDK/cmdline-tools/latest/bin:$ANDROIDSDK/platform-tools:$PATH
+
           buildozer init || true
           sed -i 's/# version = 1.0.0/version = 1.0.0/' buildozer.spec
           buildozer -v android debug
