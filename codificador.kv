@@ -1,0 +1,24 @@
+<MainLayout>:
+    orientation: "vertical"
+    padding: 10
+    spacing: 10
+
+    TextInput:
+        id: entrada
+        hint_text: "Texto Original / Codificado"
+        size_hint_y: 0.3
+
+    BoxLayout:
+        size_hint_y: 0.1
+        spacing: 10
+        Button:
+            text: "Code"
+            on_press: root.codificar()
+        Button:
+            text: "Uncode"
+            on_press: root.decodificar()
+
+    TextInput:
+        id: saida
+        hint_text: "Resultado"
+        size_hint_y: 0.3
