@@ -1,6 +1,6 @@
 BoxLayout:
     orientation: "vertical"
-    padding: 25
+    padding: 20
     spacing: 20
     canvas.before:
         Color:
@@ -29,49 +29,30 @@ BoxLayout:
         font_size: 18
         background_normal: ''
         background_active: ''
-        canvas.before:
-            Color:
-                rgba: 1, 1, 1, 1
-            RoundedRectangle:
-                pos: self.pos
-                size: self.size
-                radius: [15,]
+        cursor_color: (0, 0, 0, 1)
+        # Removido canvas arredondado para não bloquear o toque
 
     BoxLayout:
         size_hint_y: None
-        height: 60
-        spacing: 25
-        padding: [0, 10]
+        height: 70  # Aumentado
+        spacing: 20
+        padding: [0, 0]
 
         Button:
             text: "Codificar"
-            font_size: 18
+            font_size: 20
             background_normal: ''
             background_color: (0.2, 0.6, 1, 1)
             color: (1, 1, 1, 1)
             on_press: app.codificar_texto()
-            canvas.before:
-                Color:
-                    rgba: self.background_color
-                RoundedRectangle:
-                    pos: self.pos
-                    size: self.size
-                    radius: [15,]
 
         Button:
             text: "Decodificar"
-            font_size: 18
+            font_size: 20
             background_normal: ''
             background_color: (0.1, 0.8, 0.4, 1)
             color: (1, 1, 1, 1)
             on_press: app.decodificar_texto()
-            canvas.before:
-                Color:
-                    rgba: self.background_color
-                RoundedRectangle:
-                    pos: self.pos
-                    size: self.size
-                    radius: [15,]
 
     Label:
         text: "📜 Resultado:"
@@ -96,10 +77,3 @@ BoxLayout:
         hint_text: "O texto codificado/decodificado aparecerá aqui..."
         on_touch_down:
             if self.collide_point(*args[1].pos): app.copiar_resultado(self.text)
-        canvas.before:
-            Color:
-                rgba: 1, 1, 1, 1
-            RoundedRectangle:
-                pos: self.pos
-                size: self.size
-                radius: [15,]
