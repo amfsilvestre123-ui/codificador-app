@@ -7,6 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -22,12 +23,9 @@ jobs:
           sudo apt install -y python3-pip git zip unzip openjdk-17-jdk
           pip install buildozer cython virtualenv
 
-            - name: Build APK
+      - name: Build APK
         run: |
           buildozer -v android debug
-
-        env:
-          USE_SDK_WRAPPER: "no"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
