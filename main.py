@@ -4,25 +4,45 @@ from kivy.properties import StringProperty
 import random
 import string
 
+# Guardar mapeamentos de codificação
+original_to_coded = {}
+coded_to_original = {}
+
 class CodificadorLayout(BoxLayout):
     input_text = StringProperty("")
     output_text = StringProperty("")
 
     def code_text(self):
+        global original_to_coded, coded_to_original
+        original_to_coded = {}
+        coded_to_original = {}
+
         words = self.input_text.split()
         coded_words = []
+
         for word in words:
-            if len(word) > 1:
+            if len(word) > 2:
                 idx = random.randint(0, len(word) - 1)
                 new_letter = random.choice(string.ascii_lowercase)
-                coded_words.append(word[:idx] + new_letter + word[idx+1:])
+                coded_word = word[:idx] + new_letter + word[idx+1:]
             else:
-                coded_words.append(word)
+                coded_word = word
+            coded_words.append(coded_word)
+            original_to_coded[word] = coded_word
+            coded_to_original[coded_word] = word
+
         self.output_text = " ".join(coded_words)
 
     def uncode_text(self):
-        # (Simplesmente mostra o texto original)
-        self.output_text = self.input_text
+        global coded_to_original
+        words = self.input_text.split()
+        decoded_words = []
+        for word in words:
+            if word in coded_to_original:
+                decoded_words.append(coded_to_original[word])
+            else:
+                decoded_words.append(word)
+        self.output_text = " ".join(decoded_words)
 
 class CodificadorApp(App):
     def build(self):
