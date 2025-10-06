@@ -22,11 +22,10 @@ jobs:
           sudo apt install -y python3-pip git zip unzip openjdk-17-jdk
           pip install buildozer cython virtualenv
 
-      - name: Build APK
+            - name: Build APK
         run: |
-          buildozer init
-          cp buildozer.spec buildozer.spec.backup
           buildozer -v android debug
+
         env:
           USE_SDK_WRAPPER: "no"
 
