@@ -1,94 +1,114 @@
-from kivy.app import App
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.textinput import TextInput
-from kivy.uix.button import Button
-from kivy.core.clipboard import Clipboard
-from kivy.uix.label import Label
 import random
+import string
+from kivy.app import App
+from kivy.lang import Builder
+from kivy.uix.boxlayout import BoxLayout
 
-class CodificadorLayout(BoxLayout):
-    def __init__(self, **kwargs):
-        super().__init__(orientation='vertical', spacing=20, padding=30, **kwargs)
 
-        self.mapping = {}
-        self.reverse_mapping = {}
+KV = '''
+BoxLayout:
+    orientation: 'vertical'
+    padding: 20
+    spacing: 15
 
-        # Caixa de entrada (texto original)
-        self.input_box = TextInput(
-            hint_text='Escreve o texto para codificar...',
-            multiline=True,
-            font_size='22sp',
-            size_hint_y=0.5
-        )
-        self.add_widget(self.input_box)
+    Label:
+        text: "Codificador Enigma"
+        font_size: '32sp'
+        bold: True
+        size_hint_y: None
+        height: self.texture_size[1] + 10
 
-        # Caixa de saída (texto codificado)
-        self.output_box = TextInput(
-            hint_text='Texto codificado ou descodificado aparecerá aqui...',
-            multiline=True,
-            readonly=True,
-            font_size='22sp',
-            size_hint_y=0.5
-        )
-        self.add_widget(self.output_box)
+    TextInput:
+        id: input_text
+        hint_text: "Escreve o texto aqui..."
+        font_size: '24sp'
+        size_hint_y: 0.4
+        multiline: True
 
-        # Linha de botões
-        buttons = BoxLayout(size_hint_y=0.2, spacing=10)
-        encode_button = Button(text='Codificar', font_size='22sp', background_color=(0.2, 0.6, 1, 1))
-        encode_button.bind(on_press=self.codificar)
-        decode_button = Button(text='Descodificar', font_size='22sp', background_color=(0.3, 0.8, 0.3, 1))
-        decode_button.bind(on_press=self.descodificar)
-        copy_button = Button(text='Copiar', font_size='22sp', background_color=(0.9, 0.6, 0.2, 1))
-        copy_button.bind(on_press=self.copiar)
-        buttons.add_widget(encode_button)
-        buttons.add_widget(decode_button)
-        buttons.add_widget(copy_button)
-        self.add_widget(buttons)
+    BoxLayout:
+        size_hint_y: None
+        height: 80
+        spacing: 20
 
-        # Mensagem inferior
-        self.status = Label(text='', font_size='18sp', size_hint_y=0.1)
-        self.add_widget(self.status)
+        Button:
+            text: "Codificar"
+            font_size: '26sp'
+            background_color: (0.2, 0.6, 1, 1)
+            on_press: app.encode_text()
 
-    def codificar(self, instance):
-        texto = self.input_box.text.strip()
-        if not texto:
-            self.status.text = '⚠️ Escreve algo para codificar.'
-            return
+        Button:
+            text: "Descodificar"
+            font_size: '26sp'
+            background_color: (0.3, 1, 0.4, 1)
+            on_press: app.decode_text()
 
-        indices = list(range(len(texto)))
-        random.shuffle(indices)
-        self.mapping = {i: indices[i] for i in range(len(texto))}
-        self.reverse_mapping = {v: k for k, v in self.mapping.items()}
+    Label:
+        text: "Resultado:"
+        font_size: '28sp'
+        bold: True
+        size_hint_y: None
+        height: self.texture_size[1] + 10
 
-        resultado = ''.join([texto[self.mapping[i]] for i in range(len(texto))])
-        self.output_box.text = resultado
-        self.status.text = '✅ Texto codificado!'
+    ScrollView:
+        size_hint_y: 0.4
+        do_scroll_x: False
+        do_scroll_y: True
 
-    def descodificar(self, instance):
-        texto = self.output_box.text.strip()
-        if not texto:
-            self.status.text = '⚠️ Não há texto para descodificar.'
-            return
-        if not self.reverse_mapping:
-            self.status.text = '⚠️ O mapa de codificação foi perdido (precisas codificar primeiro).'
-            return
+        Label:
+            id: output_text
+            text: ""
+            font_size: '24sp'
+            text_size: self.width, None
+            size_hint_y: None
+            height: self.texture_size[1]
+            padding: [10, 10]
+            color: (1, 1, 1, 1)
+'''
 
-        resultado = ''.join([texto[self.reverse_mapping[i]] for i in range(len(texto))])
-        self.output_box.text = resultado
-        self.status.text = '✅ Texto descodificado!'
-
-    def copiar(self, instance):
-        texto = self.output_box.text.strip()
-        if texto:
-            Clipboard.copy(texto)
-            self.status.text = '📋 Copiado para a área de transferência.'
-        else:
-            self.status.text = '⚠️ Nada para copiar.'
 
 class CodificadorApp(App):
     def build(self):
-        self.title = 'Codificador Enigma'
-        return CodificadorLayout()
+        return Builder.load_string(KV)
 
-if __name__ == '__main__':
+    def encode_text(self):
+        texto = self.root.ids.input_text.text.strip()
+        if not texto:
+            self.root.ids.output_text.text = "[vazio]"
+            return
+
+        chave = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
+        random.seed(chave)
+        alfabeto = string.ascii_letters + string.digits + " .,!?;:-_@#%&()/"
+
+        mapa = list(alfabeto)
+        random.shuffle(mapa)
+        dicionario = dict(zip(alfabeto, mapa))
+
+        resultado = ''.join([dicionario.get(c, c) for c in texto])
+        texto_codificado = f"#KEY:{chave}#{resultado}"
+
+        self.root.ids.output_text.text = texto_codificado
+
+    def decode_text(self):
+        texto = self.root.ids.input_text.text.strip()
+        if not texto.startswith("#KEY:"):
+            self.root.ids.output_text.text = "Texto inválido (falta chave)"
+            return
+
+        try:
+            chave, mensagem = texto.split("#", 2)[1], texto.split("#", 2)[2]
+            random.seed(chave)
+            alfabeto = string.ascii_letters + string.digits + " .,!?;:-_@#%&()/"
+
+            mapa = list(alfabeto)
+            random.shuffle(mapa)
+            dicionario_inverso = dict(zip(mapa, alfabeto))
+
+            resultado = ''.join([dicionario_inverso.get(c, c) for c in mensagem])
+            self.root.ids.output_text.text = resultado
+        except Exception as e:
+            self.root.ids.output_text.text = f"Erro ao descodificar: {e}"
+
+
+if __name__ == "__main__":
     CodificadorApp().run()
