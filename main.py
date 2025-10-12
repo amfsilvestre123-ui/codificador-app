@@ -1,5 +1,6 @@
 import random
 import string
+import base64
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
@@ -49,20 +50,17 @@ BoxLayout:
         size_hint_y: None
         height: self.texture_size[1] + 10
 
-    ScrollView:
+    TextInput:
+        id: output_text
+        text: ""
+        font_size: '24sp'
         size_hint_y: 0.4
-        do_scroll_x: False
-        do_scroll_y: True
-
-        Label:
-            id: output_text
-            text: ""
-            font_size: '24sp'
-            text_size: self.width, None
-            size_hint_y: None
-            height: self.texture_size[1]
-            padding: [10, 10]
-            color: (1, 1, 1, 1)
+        multiline: True
+        readonly: True
+        cursor_blink: False
+        background_color: (0.15, 0.15, 0.15, 1)
+        foreground_color: (1, 1, 1, 1)
+        padding: [10, 10]
 '''
 
 
@@ -76,6 +74,7 @@ class CodificadorApp(App):
             self.root.ids.output_text.text = "[vazio]"
             return
 
+        # Gera chave aleatória
         chave = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
         random.seed(chave)
         alfabeto = string.ascii_letters + string.digits + " .,!?;:-_@#%&()/"
@@ -85,27 +84,33 @@ class CodificadorApp(App):
         dicionario = dict(zip(alfabeto, mapa))
 
         resultado = ''.join([dicionario.get(c, c) for c in texto])
-        texto_codificado = f"#KEY:{chave}#{resultado}"
+
+        # Codifica a chave em Base64 para ocultar
+        chave_codificada = base64.b64encode(chave.encode()).decode()
+        texto_codificado = f"#@{chave_codificada}#{resultado}"
 
         self.root.ids.output_text.text = texto_codificado
 
     def decode_text(self):
         texto = self.root.ids.input_text.text.strip()
-        if not texto.startswith("#KEY:"):
-            self.root.ids.output_text.text = "Texto inválido (falta chave)"
+        if not texto.startswith("#@"):
+            self.root.ids.output_text.text = "Texto inválido (formato desconhecido)"
             return
 
         try:
-            chave, mensagem = texto.split("#", 2)[1], texto.split("#", 2)[2]
+            chave_codificada = texto.split("#")[1].replace("@", "")
+            mensagem = texto.split("#", 2)[2]
+            chave = base64.b64decode(chave_codificada.encode()).decode()
+
             random.seed(chave)
             alfabeto = string.ascii_letters + string.digits + " .,!?;:-_@#%&()/"
-
             mapa = list(alfabeto)
             random.shuffle(mapa)
             dicionario_inverso = dict(zip(mapa, alfabeto))
 
             resultado = ''.join([dicionario_inverso.get(c, c) for c in mensagem])
             self.root.ids.output_text.text = resultado
+
         except Exception as e:
             self.root.ids.output_text.text = f"Erro ao descodificar: {e}"
 
